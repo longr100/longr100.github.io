@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scent Lure Recipe Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c5530;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .recipe-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: none;
+            border-bottom: 3px solid transparent;
+            margin-right: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: white;
+            border-bottom: 3px solid #2c5530;
+            color: #2c5530;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .controls-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .control-label {
+            min-width: 150px;
+            font-weight: bold;
+        }
+        
+        .slider-container {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2c5530;
+            cursor: pointer;
+        }
+        
+        .value-input {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .unit-label {
+            min-width: 60px;
+            color: #666;
+            font-weight: bold;
+        }
+        
+        .presets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .preset-btn {
+            padding: 8px 16px;
+            background: #2c5530;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 12px;
+        }
+        
+        .preset-btn:hover {
+            background: #3d6b42;
+        }
+        
+        .recipe-results {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .ingredients-table {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: #2c5530;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .table-content {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .ingredient-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: center;
+        }
+        
+        .ingredient-row:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .ingredient-name {
+            font-weight: 500;
+        }
+        
+        .ingredient-amount {
+            text-align: center;
+            font-weight: bold;
+            color: #2c5530;
+        }
+        
+        .ingredient-unit {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .total-row {
+            background: #e8f4e8 !important;
+            font-weight: bold;
+            border-top: 2px solid #2c5530;
+        }
+        
+        .summary-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2c5530;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .summary-value {
+            font-weight: bold;
+            color: #2c5530;
+        }
+        
+        .instructions {
+            background: #e8f4e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2c5530;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .control-label {
+            min-width: 150px;
+            font-weight: bold;
+        }
+        
+        .slider-container {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2c5530;
+            cursor: pointer;
+        }
+        
+        .value-input {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .unit-label {
+            min-width: 60px;
+            color: #666;
+            font-weight: bold;
+        }
+        
+        .pouch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .pouch-option {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: border-color 0.3s;
+        }
+        
+        .pouch-option:hover {
+            border-color: #2c5530;
+        }
+        
+        .pouch-option.active {
+            border-color: #2c5530;
+            background: #f0f8f0;
+        }
+        
+        .pouch-option label {
+            font-weight: bold;
+            color: #2c5530;
+            text-align: center;
+        }
+        
+        .pouch-input {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .pouch-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 900px) {
+            .recipe-results {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-label {
+                min-width: auto;
+            }
+            
+            .pouch-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        
+        .note {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Scent Lure Recipe Calculator</h1>
+        <p class="subtitle">Woodland Park Zoo Conservation Technology - Recipe Mixing Tool</p>
+        
+        <div class="instructions">
+            <strong>How to use:</strong> Select a recipe type, choose your target batch size, and optionally specify the number of dispensers to fill. The calculator will scale all ingredients proportionally and show you exactly how much of each ingredient to measure.
+        </div>
+        
+        <!-- Recipe Type Tabs -->
+        <div class="recipe-tabs">
+            <button class="tab active" onclick="switchRecipe('animal')">🦫 Animal Sourced Recipe</button>
+            <button class="tab" onclick="switchRecipe('synthetic')">⚗️ Synthetic Recipe</button>
+        </div>
+        
+        <!-- Animal Sourced Recipe -->
+        <div id="animalContent" class="tab-content active">
+            <div class="controls-section">
+                <h3>🦫 Animal Sourced Recipe Configuration</h3>
+                <p><strong>Base Recipe:</strong> 66 oz total (2-liter equivalent, updated)</p>
+                
+                <h4>📦 Volume Configuration</h4>
+                <div class="control-group">
+                    <div class="control-label">Pouch Size:</div>
+                    <div class="slider-container">
+                        <input type="range" id="animalPouchSlider" class="slider" min="1" max="64" value="28" step="1">
+                    </div>
+                    <input type="number" id="animalPouchInput" class="value-input" value="28" step="1" min="1" max="64">
+                    <span class="unit-label">oz</span>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">Number of Pouches:</div>
+                    <div class="slider-container">
+                        <input type="range" id="animalCountSlider" class="slider" min="1" max="50" value="1" step="1">
+                    </div>
+                    <input type="number" id="animalCountInput" class="value-input" value="1" step="1" min="1" max="50">
+                    <span class="unit-label">pouches</span>
+                </div>
+                
+                <h4>Quick Presets</h4>
+                <div class="presets">
+                    <button class="preset-btn" onclick="setAnimalVolume(4, 1)">4oz × 1</button>
+                    <button class="preset-btn" onclick="setAnimalVolume(8, 1)">8oz × 1</button>
+                    <button class="preset-btn" onclick="setAnimalVolume(12, 1)">12oz × 1</button>
+                    <button class="preset-btn" onclick="setAnimalVolume(17, 1)">17oz × 1</button>
+                    <button class="preset-btn" onclick="setAnimalVolume(20, 1)">20oz × 1</button>
+                    <button class="preset-btn" onclick="setAnimalVolume(24, 1)">24oz × 1</button>
+                    <button class="preset-btn" onclick="setAnimalVolume(28, 5)">28oz × 5</button>
+                    <button class="preset-btn" onclick="setAnimalVolume(20, 10)">20oz × 10</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Synthetic Recipe -->
+        <div id="syntheticContent" class="tab-content">
+            <div class="controls-section">
+                <h3>⚗️ Synthetic Recipe Configuration</h3>
+                <p><strong>Base Recipe:</strong> 68 oz total (Keon Final Report ratios)</p>
+                
+                <h4>🧴 Volume Configuration</h4>
+                <div class="control-group">
+                    <div class="control-label">Dispenser Size:</div>
+                    <div class="slider-container">
+                        <input type="range" id="syntheticPouchSlider" class="slider" min="1" max="64" value="28" step="1">
+                    </div>
+                    <input type="number" id="syntheticPouchInput" class="value-input" value="28" step="1" min="1" max="64">
+                    <span class="unit-label">oz</span>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">Number of Dispensers:</div>
+                    <div class="slider-container">
+                        <input type="range" id="syntheticCountSlider" class="slider" min="1" max="50" value="1" step="1">
+                    </div>
+                    <input type="number" id="syntheticCountInput" class="value-input" value="1" step="1" min="1" max="50">
+                    <span class="unit-label">dispensers</span>
+                </div>
+                
+                <h4>Quick Presets</h4>
+                <div class="presets">
+                    <button class="preset-btn" onclick="setSyntheticVolume(4, 1)">4oz × 1</button>
+                    <button class="preset-btn" onclick="setSyntheticVolume(8, 1)">8oz × 1</button>
+                    <button class="preset-btn" onclick="setSyntheticVolume(12, 1)">12oz × 1</button>
+                    <button class="preset-btn" onclick="setSyntheticVolume(17, 1)">17oz × 1</button>
+                    <button class="preset-btn" onclick="setSyntheticVolume(20, 1)">20oz × 1</button>
+                    <button class="preset-btn" onclick="setSyntheticVolume(24, 1)">24oz × 1</button>
+                    <button class="preset-btn" onclick="setSyntheticVolume(28, 5)">28oz × 5</button>
+                    <button class="preset-btn" onclick="setSyntheticVolume(4, 10)">4oz × 10</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="recipe-results">
+            <!-- Ingredients Table -->
+            <div class="ingredients-table">
+                <div class="table-header" id="ingredientsHeader">
+                    Recipe Ingredients
+                </div>
+                <div class="table-content" id="ingredientsList">
+                    <!-- Ingredients will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Summary -->
+            <div class="summary-section">
+                <h4>📊 Batch Summary</h4>
+                <div id="batchSummary">
+                    <!-- Summary will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Recipe data structures
+        // Recipe data structures (simplified - no pouch size restrictions)
+        const animalRecipe = {
+            baseSize: 66, // oz (67 - 1 oz Hawbacker's removed)
+            ozToMl: 29.5735, // Add conversion factor
+            ingredients: [
+                { name: "Propylene glycol", amount: 38, unit: "oz", type: "liquid" },
+                { name: "Water", amount: 25, unit: "oz", type: "liquid" },
+                { name: "Beaver castor oil", amount: 2, unit: "ml", type: "aromatic" },
+                { name: "Skunk Quill", amount: 0.33, unit: "ml", type: "aromatic" },
+                { name: "Anise oil", amount: 0.5, unit: "ml", type: "aromatic" },
+                { name: "Fish Oil", amount: 1, unit: "ml", type: "aromatic" }
+            ]
+        };
+        
+        const syntheticRecipe = {
+            baseSize: 68, // oz (calculated from sum)
+            ozToMl: 29.5735,
+            ingredients: [
+                { name: "Propylene glycol", amount: 38, unit: "oz", type: "liquid" },
+                { name: "Water", amount: 25, unit: "oz", type: "liquid" },
+                { name: "Synthetic castoreum (Givco)", amount: 2, unit: "ml", type: "aromatic" },
+                { name: "4-ethylphenol (beaver castor sub)", amount: 2, unit: "ml", type: "aromatic" },
+                { name: "Undecanal (fish oil sub)", amount: 0.5, unit: "ml", type: "aromatic" },
+                { name: "Undecanone (fish oil sub)", amount: 1, unit: "ml", type: "aromatic" },
+                { name: "2-phenylethanethiol (skunk sub)", amount: 0.05, unit: "ml", type: "aromatic" },
+                { name: "Anise oil", amount: 0.5, unit: "ml", type: "aromatic" }
+            ]
+        };
+        
+        let currentRecipe = 'animal';
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            calculateRecipe();
+        });
+        
+        function setupEventListeners() {
+            // Animal recipe controls
+            document.getElementById('animalPouchSlider').addEventListener('input', syncAnimalControls);
+            document.getElementById('animalPouchInput').addEventListener('input', syncAnimalControls);
+            document.getElementById('animalCountSlider').addEventListener('input', syncAnimalControls);
+            document.getElementById('animalCountInput').addEventListener('input', syncAnimalControls);
+            
+            // Synthetic recipe controls
+            document.getElementById('syntheticPouchSlider').addEventListener('input', syncSyntheticControls);
+            document.getElementById('syntheticPouchInput').addEventListener('input', syncSyntheticControls);
+            document.getElementById('syntheticCountSlider').addEventListener('input', syncSyntheticControls);
+            document.getElementById('syntheticCountInput').addEventListener('input', syncSyntheticControls);
+        }
+        
+        function syncAnimalControls() {
+            const pouchSlider = document.getElementById('animalPouchSlider');
+            const pouchInput = document.getElementById('animalPouchInput');
+            const countSlider = document.getElementById('animalCountSlider');
+            const countInput = document.getElementById('animalCountInput');
+            
+            // Sync values
+            if (event.target === pouchSlider) pouchInput.value = pouchSlider.value;
+            if (event.target === pouchInput) pouchSlider.value = pouchInput.value;
+            if (event.target === countSlider) countInput.value = countSlider.value;
+            if (event.target === countInput) countSlider.value = countInput.value;
+            
+            calculateRecipe();
+        }
+        
+        function syncSyntheticControls() {
+            const pouchSlider = document.getElementById('syntheticPouchSlider');
+            const pouchInput = document.getElementById('syntheticPouchInput');
+            const countSlider = document.getElementById('syntheticCountSlider');
+            const countInput = document.getElementById('syntheticCountInput');
+            
+            // Sync values
+            if (event.target === pouchSlider) pouchInput.value = pouchSlider.value;
+            if (event.target === pouchInput) pouchSlider.value = pouchInput.value;
+            if (event.target === countSlider) countInput.value = countSlider.value;
+            if (event.target === countInput) countSlider.value = countInput.value;
+            
+            calculateRecipe();
+        }
+        
+        function switchRecipe(recipeType) {
+            currentRecipe = recipeType;
+            
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (recipeType === 'animal') {
+                document.querySelector('[onclick="switchRecipe(\'animal\')"]').classList.add('active');
+                document.getElementById('animalContent').classList.add('active');
+            } else {
+                document.querySelector('[onclick="switchRecipe(\'synthetic\')"]').classList.add('active');
+                document.getElementById('syntheticContent').classList.add('active');
+            }
+            
+            calculateRecipe();
+        }
+        
+        function setAnimalVolume(pouchSize, count) {
+            document.getElementById('animalPouchSlider').value = pouchSize;
+            document.getElementById('animalPouchInput').value = pouchSize;
+            document.getElementById('animalCountSlider').value = count;
+            document.getElementById('animalCountInput').value = count;
+            calculateRecipe();
+        }
+        
+        function setSyntheticVolume(pouchSize, count) {
+            document.getElementById('syntheticPouchSlider').value = pouchSize;
+            document.getElementById('syntheticPouchInput').value = pouchSize;
+            document.getElementById('syntheticCountSlider').value = count;
+            document.getElementById('syntheticCountInput').value = count;
+            calculateRecipe();
+        }
+        
+        function calculateRecipe() {
+            if (currentRecipe === 'animal') {
+                calculateAnimalRecipe();
+            } else {
+                calculateSyntheticRecipe();
+            }
+        }
+        
+        function calculateAnimalRecipe() {
+            const pouchSize = parseFloat(document.getElementById('animalPouchInput').value);
+            const pouchCount = parseInt(document.getElementById('animalCountInput').value);
+            
+            if (isNaN(pouchSize) || isNaN(pouchCount) || pouchSize <= 0 || pouchCount <= 0) {
+                document.getElementById('ingredientsList').innerHTML = '<div class="ingredient-row"><div class="ingredient-name">Invalid parameters</div></div>';
+                document.getElementById('batchSummary').innerHTML = '<div class="summary-row"><span>Check pouch size and count values</span></div>';
+                return;
+            }
+            
+            // Calculate total volume needed
+            const totalVolumeOz = pouchSize * pouchCount;
+            
+            // Calculate ingredients
+            let html = '';
+            const scaleFactor = totalVolumeOz / animalRecipe.baseSize;
+            let totalAromaticsMl = 0;
+            
+            animalRecipe.ingredients.forEach(ingredient => {
+                let totalAmount = ingredient.amount * scaleFactor;
+                
+                // Apply ml conversion for small animal ingredients
+                if (ingredient.unit === 'ml') {
+                    totalAmount = totalAmount * animalRecipe.ozToMl;
+                    totalAromaticsMl += totalAmount;
+                }
+                
+                html += `
+                    <div class="ingredient-row">
+                        <div class="ingredient-name">${ingredient.name}</div>
+                        <div class="ingredient-amount">${totalAmount.toFixed(3)}</div>
+                        <div class="ingredient-unit">${ingredient.unit}</div>
+                    </div>
+                `;
+            });
+            
+            // Add batch mixing equivalents
+            html += `<div class="ingredient-row total-row">
+                        <div class="ingredient-name">BATCH MIXING EQUIVALENTS</div>
+                        <div class="ingredient-amount"></div>
+                        <div class="ingredient-unit"></div>
+                     </div>`;
+            
+            animalRecipe.ingredients.forEach(ingredient => {
+                let totalAmount = ingredient.amount * scaleFactor;
+                
+                if (ingredient.unit === 'ml') {
+                    totalAmount = totalAmount * animalRecipe.ozToMl;
+                    // For ml ingredients, show in ml since they're precision amounts
+                    html += `
+                        <div class="ingredient-row">
+                            <div class="ingredient-name">→ ${ingredient.name}</div>
+                            <div class="ingredient-amount">${totalAmount.toFixed(2)} ml</div>
+                            <div class="ingredient-unit">precise</div>
+                        </div>
+                    `;
+                } else {
+                    // For oz ingredients, show larger units
+                    const gallons = totalAmount / 128;
+                    const quarts = totalAmount / 32;
+                    
+                    let batchDisplay = '';
+                    if (totalAmount >= 128) {
+                        batchDisplay = `${gallons.toFixed(2)} gal`;
+                    } else if (totalAmount >= 32) {
+                        batchDisplay = `${quarts.toFixed(2)} qt`;
+                    } else if (totalAmount >= 16) {
+                        batchDisplay = `${(totalAmount / 16).toFixed(2)} pt`;
+                    } else {
+                        batchDisplay = `${totalAmount.toFixed(2)} oz`;
+                    }
+                    
+                    html += `
+                        <div class="ingredient-row">
+                            <div class="ingredient-name">→ ${ingredient.name}</div>
+                            <div class="ingredient-amount">${batchDisplay}</div>
+                            <div class="ingredient-unit">batch</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            document.getElementById('ingredientsList').innerHTML = html;
+            document.getElementById('ingredientsHeader').textContent = `Animal Recipe - ${pouchCount} × ${pouchSize}oz pouches`;
+            
+            // Update summary
+            const summaryHtml = `
+                <div class="summary-row">
+                    <span>Pouch Configuration:</span>
+                    <span class="summary-value">${pouchCount} × ${pouchSize}oz</span>
+                </div>
+                <div class="summary-row">
+                    <span>Total Volume:</span>
+                    <span class="summary-value">${totalVolumeOz.toFixed(1)} oz</span>
+                </div>
+                <div class="summary-row">
+                    <span>Scale Factor:</span>
+                    <span class="summary-value">${scaleFactor.toFixed(3)}x base recipe</span>
+                </div>
+                <div class="summary-row">
+                    <span>Total Aromatics:</span>
+                    <span class="summary-value">${totalAromaticsMl.toFixed(2)} ml</span>
+                </div>
+                <div class="summary-row">
+                    <span>Batch Size:</span>
+                    <span class="summary-value">${totalVolumeOz >= 128 ? (totalVolumeOz/128).toFixed(2) + ' gallons' : totalVolumeOz.toFixed(1) + ' oz'}</span>
+                </div>
+                ${totalVolumeOz > 256 ? '<div class="note">📋 Large batch - consider mixing in stages</div>' : ''}
+                ${totalAromaticsMl < 1 ? '<div class="warning">⚠️ Very small aromatic amounts - use precision pipettes</div>' : ''}
+                ${pouchSize < 4 ? '<div class="warning">⚠️ Very small pouches - ensure minimum viable batch size</div>' : ''}
+            `;
+            
+            document.getElementById('batchSummary').innerHTML = summaryHtml;
+        }
+        
+        function calculateSyntheticRecipe() {
+            const pouchSize = parseFloat(document.getElementById('syntheticPouchInput').value);
+            const pouchCount = parseInt(document.getElementById('syntheticCountInput').value);
+            
+            if (isNaN(pouchSize) || isNaN(pouchCount) || pouchSize <= 0 || pouchCount <= 0) {
+                document.getElementById('ingredientsList').innerHTML = '<div class="ingredient-row"><div class="ingredient-name">Invalid parameters</div></div>';
+                document.getElementById('batchSummary').innerHTML = '<div class="summary-row"><span>Check dispenser size and count values</span></div>';
+                return;
+            }
+            
+            // Calculate total volume needed
+            const totalVolumeOz = pouchSize * pouchCount;
+            
+            // Calculate ingredients
+            let html = '';
+            const scaleFactor = totalVolumeOz / syntheticRecipe.baseSize;
+            let totalAromaticsMl = 0;
+            
+            syntheticRecipe.ingredients.forEach(ingredient => {
+                let totalAmount = ingredient.amount * scaleFactor;
+                
+                // Apply ml conversion for synthetic aromatics
+                if (ingredient.unit === 'ml') {
+                    totalAmount = totalAmount * syntheticRecipe.ozToMl;
+                    totalAromaticsMl += totalAmount;
+                }
+                
+                html += `
+                    <div class="ingredient-row">
+                        <div class="ingredient-name">${ingredient.name}</div>
+                        <div class="ingredient-amount">${totalAmount.toFixed(3)}</div>
+                        <div class="ingredient-unit">${ingredient.unit}</div>
+                    </div>
+                `;
+            });
+            
+            // Add batch mixing equivalents
+            html += `<div class="ingredient-row total-row">
+                        <div class="ingredient-name">BATCH MIXING EQUIVALENTS</div>
+                        <div class="ingredient-amount"></div>
+                        <div class="ingredient-unit"></div>
+                     </div>`;
+            
+            syntheticRecipe.ingredients.forEach(ingredient => {
+                let totalAmount = ingredient.amount * scaleFactor;
+                
+                if (ingredient.unit === 'ml') {
+                    totalAmount = totalAmount * syntheticRecipe.ozToMl;
+                    // For ml ingredients, show in ml since they're small
+                    html += `
+                        <div class="ingredient-row">
+                            <div class="ingredient-name">→ ${ingredient.name}</div>
+                            <div class="ingredient-amount">${totalAmount.toFixed(2)} ml</div>
+                            <div class="ingredient-unit">precise</div>
+                        </div>
+                    `;
+                } else {
+                    // For oz ingredients, show larger units
+                    const gallons = totalAmount / 128;
+                    const quarts = totalAmount / 32;
+                    
+                    let batchDisplay = '';
+                    if (totalAmount >= 128) {
+                        batchDisplay = `${gallons.toFixed(2)} gal`;
+                    } else if (totalAmount >= 32) {
+                        batchDisplay = `${quarts.toFixed(2)} qt`;
+                    } else if (totalAmount >= 16) {
+                        batchDisplay = `${(totalAmount / 16).toFixed(2)} pt`;
+                    } else {
+                        batchDisplay = `${totalAmount.toFixed(2)} oz`;
+                    }
+                    
+                    html += `
+                        <div class="ingredient-row">
+                            <div class="ingredient-name">→ ${ingredient.name}</div>
+                            <div class="ingredient-amount">${batchDisplay}</div>
+                            <div class="ingredient-unit">batch</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            document.getElementById('ingredientsList').innerHTML = html;
+            document.getElementById('ingredientsHeader').textContent = `Synthetic Recipe - ${pouchCount} × ${pouchSize}oz dispensers`;
+            
+            // Update summary
+            const summaryHtml = `
+                <div class="summary-row">
+                    <span>Dispenser Configuration:</span>
+                    <span class="summary-value">${pouchCount} × ${pouchSize}oz</span>
+                </div>
+                <div class="summary-row">
+                    <span>Total Volume:</span>
+                    <span class="summary-value">${totalVolumeOz.toFixed(1)} oz</span>
+                </div>
+                <div class="summary-row">
+                    <span>Scale Factor:</span>
+                    <span class="summary-value">${scaleFactor.toFixed(3)}x base recipe</span>
+                </div>
+                <div class="summary-row">
+                    <span>Total Aromatics:</span>
+                    <span class="summary-value">${totalAromaticsMl.toFixed(2)} ml</span>
+                </div>
+                <div class="summary-row">
+                    <span>Batch Size:</span>
+                    <span class="summary-value">${totalVolumeOz >= 128 ? (totalVolumeOz/128).toFixed(2) + ' gallons' : totalVolumeOz.toFixed(1) + ' oz'}</span>
+                </div>
+                ${totalVolumeOz > 256 ? '<div class="note">📋 Large batch - consider mixing in stages</div>' : ''}
+                ${totalAromaticsMl < 1 ? '<div class="warning">⚠️ Very small aromatic amounts - use precision pipettes</div>' : ''}
+                ${pouchSize < 4 ? '<div class="warning">⚠️ Very small dispensers - ensure minimum viable batch size</div>' : ''}
+            `;
+            
+            document.getElementById('batchSummary').innerHTML = summaryHtml;
+        }
+    </script>
+</body>
+</html>
